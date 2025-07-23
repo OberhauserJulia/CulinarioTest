@@ -6,12 +6,13 @@ import { RecipeType } from '../context/RecipeContext';
 
 type RecipeItemNavigationProp = StackNavigationProp<HomeStackParamList, 'Recipe'>;
 
+
 interface RecipeItemProps {
   recipe?: RecipeType;
+  onPress?: () => void;
 }
 
-export default function RecipeItem({ recipe }: RecipeItemProps) {
-  const navigation = useNavigation<RecipeItemNavigationProp>();
+export default function RecipeItem({ recipe, onPress }: RecipeItemProps) {
 
   // Fallback für Demo-Daten wenn kein Rezept übergeben wird
   const displayName = recipe?.name || "Marry Me Gnocchi";
@@ -28,7 +29,7 @@ export default function RecipeItem({ recipe }: RecipeItemProps) {
   return (
     <TouchableOpacity 
       className="flex flex-col gap-0 self-start w-full h-[198px] rounded-[15px] overflow-hidden"
-      onPress={() => navigation.navigate('Recipe', { recipeId })}
+      onPress={onPress}
     >
 
     <View className="w-full h-[149px] bg-white rounded-b-[15px]">

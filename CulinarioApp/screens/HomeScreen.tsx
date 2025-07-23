@@ -60,34 +60,8 @@ export default function HomeScreen({ navigation }: Props) {
         <SmallButton settings={true} />
       </View>
 
-            {/* Category Item */}
-            <View style={{ flex: 0, flexShrink: 1 }}>
-        <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row', gap: 12 }} showsHorizontalScrollIndicator={false}>
-          <CategoryItem
-            category="Alle"
-            isSelected={selectedCategory === "Alle"}
-            onPress={() => setSelectedCategory("Alle")}
-          />
-          <CategoryItem
-            category="Vorspeise"
-            isSelected={selectedCategory === "Vorspeise"}
-            onPress={() => setSelectedCategory("Vorspeise")}
-          />
-          <CategoryItem
-            category="Hauptgericht"
-            isSelected={selectedCategory === "Hauptgericht"}
-            onPress={() => setSelectedCategory("Hauptgericht")}
-          />
-          <CategoryItem
-            category="Dessert"
-            isSelected={selectedCategory === "Dessert"}
-            onPress={() => setSelectedCategory("Dessert")}
-          />
-        </ScrollView>
-      </View>
-
       {/* Recipe List */}
-      <ScrollView style={{ flex: 1, flexGrow: 1 }} contentContainerStyle={{ flexDirection: 'column', gap: 24, paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ flexDirection: 'column', gap: 24, paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
         {error && (
           <View className="bg-red-500/20 p-4 rounded-lg mb-4">
             <Text className="text-red-300 text-center">{error}</Text>
@@ -104,8 +78,14 @@ export default function HomeScreen({ navigation }: Props) {
             </Text>
           </View>
         ) : (
-          filteredRecipes.map((recipe) => (
-            <RecipeItem key={recipe.id} recipe={recipe} />
+        filteredRecipes
+          .filter(recipe => typeof recipe.id === "string" && recipe.id)
+          .map((recipe) => (
+            <RecipeItem
+              key={recipe.id}
+              recipe={recipe}
+              onPress={() => navigation.navigate("Recipe", { recipeId: recipe.id as string })}
+            />
           ))
         )}
         

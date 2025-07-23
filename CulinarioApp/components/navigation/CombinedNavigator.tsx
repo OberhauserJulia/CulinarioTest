@@ -19,17 +19,6 @@ export type HomeStackParamList = {
 
 const Stack = createStackNavigator<HomeStackParamList>();
 
-const HomeStackNavigator = () => {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Recipe" component={RecipeScreen} />
-            <Stack.Screen name="CookingMode" component={CookingModeScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
-        </Stack.Navigator>
-    );
-};
-
 export type TabParamList = {
     Home: undefined;
     AddRecipe: undefined;
@@ -46,7 +35,8 @@ const TabNavigator = () => {
         screenOptions={{ 
           headerShown: false
         }}>
-        <Tab.Screen name="Home" component={HomeStackNavigator} options={{ title: "Home" }} />
+        <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarButton: () => null }} />
+        <Stack.Screen name="Recipe" component={RecipeScreen} />
         <Tab.Screen name="AddRecipe" component={AddRecipeScreen} options={{ tabBarButton: () => null }} />
         <Tab.Screen name="ShoppingList" component={ShoppingListScreen} />
       </Tab.Navigator>
