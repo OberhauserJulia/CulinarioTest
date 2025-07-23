@@ -60,6 +60,32 @@ export default function HomeScreen({ navigation }: Props) {
         <SmallButton settings={true} />
       </View>
 
+      {/* Category Item */}
+      <View className="w-full h-auto">
+        <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row', gap: 12 }} showsHorizontalScrollIndicator={false}>
+          <CategoryItem
+            category="Alle"
+            isSelected={selectedCategory === "Alle"}
+            onPress={() => setSelectedCategory("Alle")}
+          />
+          <CategoryItem
+            category="Vorspeise"
+            isSelected={selectedCategory === "Vorspeise"}
+            onPress={() => setSelectedCategory("Vorspeise")}
+          />
+          <CategoryItem
+            category="Hauptgericht"
+            isSelected={selectedCategory === "Hauptgericht"}
+            onPress={() => setSelectedCategory("Hauptgericht")}
+          />
+          <CategoryItem
+            category="Dessert"
+            isSelected={selectedCategory === "Dessert"}
+            onPress={() => setSelectedCategory("Dessert")}
+          />
+        </ScrollView>
+      </View>
+
       {/* Recipe List */}
       <ScrollView contentContainerStyle={{ flexDirection: 'column', gap: 24, paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
         {error && (
@@ -67,7 +93,7 @@ export default function HomeScreen({ navigation }: Props) {
             <Text className="text-red-300 text-center">{error}</Text>
           </View>
         )}
-        
+
         {filteredRecipes.length === 0 ? (
           <View className="flex-1 justify-center items-center py-12">
             <Text className="text-white text-lg text-center">
@@ -78,21 +104,15 @@ export default function HomeScreen({ navigation }: Props) {
             </Text>
           </View>
         ) : (
-        filteredRecipes
-          .filter(recipe => typeof recipe.id === "string" && recipe.id)
-          .map((recipe) => (
-            <RecipeItem
-              key={recipe.id}
-              recipe={recipe}
-              onPress={() => navigation.navigate("Recipe", { recipeId: recipe.id as string })}
-            />
-          ))
-        )}
-        
-        {loading && recipes.length > 0 && (
-          <View className="py-4">
-            <ActivityIndicator size="small" color="#66A182" />
-          </View>
+          filteredRecipes
+            .filter(recipe => typeof recipe.id === "string" && recipe.id)
+            .map((recipe) => (
+              <RecipeItem
+                key={recipe.id}
+                recipe={recipe}
+                onPress={() => navigation.navigate("Recipe", { recipeId: recipe.id as string })}
+              />
+            ))
         )}
       </ScrollView>
     </View>
