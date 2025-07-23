@@ -2,7 +2,7 @@ import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import Svg, { Path } from "react-native-svg";
-import { ShoppingCart, House, Plus } from "lucide-react-native";
+import { ShoppingCart, House, Plus, Microwave } from "lucide-react-native";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   return (
@@ -21,7 +21,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
               onPress={() => navigation.navigate(route.name)}
               className="flex-1 items-center justify-center"
             >
-              {route.name === "HomeTab" && (
+              {route.name === "Home" && (
                 <House size={28} color={isFocused ? "#66A182" : "gray"} />
               )}
               {route.name === "ShoppingList" && (
