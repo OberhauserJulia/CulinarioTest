@@ -1,15 +1,64 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-
-// Imports Compponents
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, ActivityIndicator } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { HomeStackParamList } from '../components/navigation/CombinedNavigator';
+import { RecipeType } from '../context/RecipeContext';
+import { getRecipeById } from '../firebase/recipeService';
 import SmallButton from '../components/SmallButton';
 import BigButton from '../components/BigButton';
 import StepIngredientItem from '../components/StepIngredientItem';
 
-export default function CookingModeScreen() {
+type CookingModeScreenRouteProp = RouteProp<HomeStackParamList, 'CookingMode'>;
+
+type Props = {
+  route: CookingModeScreenRouteProp;
+};
+
+export default function CookingModeScreen({ route }: Props) {
+    const { recipeId } = route.params;
+    const [recipe, setRecipe] = useState<RecipeType | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [stepIndex, setStepIndex] = useState(0);
+
+    useEffect(() => {
+        const loadRecipe = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const fetchedRecipe = await getRecipeById(recipeId);
+                setRecipe(fetchedRecipe);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Fehler beim Laden des Rezepts');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadRecipe();
+    }, [recipeId]);
+
+    if (loading) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#161616' }]}> 
+                <ActivityIndicator size="large" color="#66A182" />
+                <Text style={[styles.textH1, { marginTop: 16 }]}>Lade Rezept...</Text>
+            </View>
+        );
+    }
+
+    if (error || !recipe || !recipe.preparationSteps || recipe.preparationSteps.length === 0) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#161616' }]}> 
+                <Text style={[styles.textH1, { color: '#ff6b6b', textAlign: 'center', marginHorizontal: 24 }]}> {error || 'Keine Schritte gefunden'} </Text>
+            </View>
+        );
+    }
+
+    const step = recipe.preparationSteps[stepIndex];
+
     return (
         <View style={styles.container}>
-
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <StatusBar style="light" />
 
@@ -20,25 +69,32 @@ export default function CookingModeScreen() {
                 </View>
 
                 <View style={styles.stepNumber}>
-                    <Text style={styles.textH1}> 1. Schritt </Text>
+                    <Text style={styles.textH1}>{step.stepNumber}. Schritt</Text>
                 </View>
 
-                <Text style={styles.textBody}>Erhitze die Butter, Knoblauchzehen, Oregano, Pfeffer, Salz, geräuchertes Paprikapulver sowie in einer großen Pfanne oder einem Topf bei mittlerer Hitze. Koche alles etwa 2 Minuten, bis der Knoblauch duftet. Zerbrösele den Tofu in die Pfanne und brate ihn 5 bis 10 Minuten, bis er gebräunt ist. </Text>
+                <Text style={styles.textBody}>{step.description}</Text>
 
-                <View style={styles.ingredientContainer}>
-                    <StepIngredientItem />
-                    <StepIngredientItem />
-                    <StepIngredientItem />
-                    <StepIngredientItem />
-                </View>
+                {step.ingredients && step.ingredients.length > 0 && (
+                    <View style={styles.ingredientContainer}>
+                        {step.ingredients.map((ingredient, idx) => (
+                            <StepIngredientItem key={idx} ingredient={ingredient} />
+                        ))}
+                    </View>
+                )}
             </ScrollView>
-
-            
 
             {/* Fixed Big Button */}
             <View style={styles.fixedButtonContainer}>
-                <BigButton forward={true} />
-                <BigButton forward={true} />
+                <BigButton
+                    forward={true}
+                    onPress={() => setStepIndex((prev) => Math.min(prev + 1, recipe.preparationSteps.length - 1))}
+                    disabled={stepIndex === recipe.preparationSteps.length - 1}
+                />
+                <BigButton
+                    back={true}
+                    onPress={() => setStepIndex((prev) => Math.max(prev - 1, 0))}
+                    disabled={stepIndex === 0}
+                />
             </View>
         </View>
     );

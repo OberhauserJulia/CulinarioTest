@@ -5,6 +5,11 @@ import Svg, { Path } from "react-native-svg";
 import { ShoppingCart, House, Plus, Microwave } from "lucide-react-native";
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+  // Workaround: TabBar nicht anzeigen, wenn der aktuelle Name 'Recipe' oder 'CookingMode' ist
+  const currentRoute = state.routes[state.index];
+  if (currentRoute.name === 'Recipe' || currentRoute.name === 'CookingMode') {
+    return null;
+  }
   return (
     <View className="absolute bottom-0 left-0 right-0 h-[60px] border-t-2 border-lightbackground bg-darkbackground flex-row justify-around items-center">
       <Svg width={90} height={60} viewBox="0 0 90 60" style={styles.svgStyle}>

@@ -21,7 +21,7 @@ type Props = {
   route: RecipeScreenRouteProp;
 };
 
-export default function RecipeScreen({ route }: Props) {
+export default function RecipeScreen({ route, navigation }: Props) {
   const [recipe, setRecipe] = useState<RecipeType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -154,7 +154,10 @@ export default function RecipeScreen({ route }: Props) {
 
       {/* Fixed Big Button */}
       <View style={styles.fixedButtonContainer}>
-        <BigButton cookingMode={true} />
+        <BigButton 
+          cookingMode={true}
+          onPress={() => route && route.params && route.params.recipeId && navigation.navigate('CookingMode', { recipeId: route.params.recipeId })}
+        />
       </View>
     </View>
   );

@@ -36,7 +36,9 @@ const TabNavigator = () => {
           headerShown: false
         }}>
         <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarButton: () => null }} />
-        <Stack.Screen name="Recipe" component={RecipeScreen} />
+        <Stack.Screen name="Recipe" component={RecipeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="CookingMode" component={CookingModeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
         <Tab.Screen name="AddRecipe" component={AddRecipeScreen} options={{ tabBarButton: () => null }} />
         <Tab.Screen name="ShoppingList" component={ShoppingListScreen} />
       </Tab.Navigator>
