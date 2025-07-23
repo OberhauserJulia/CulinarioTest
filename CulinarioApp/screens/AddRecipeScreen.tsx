@@ -358,6 +358,7 @@ export default function CookingModeScreen() {
                                 <Text className="text-primary font-robotoMedium">Foto hinzufügen</Text>
                             </>)}
                         </TouchableOpacity>
+                        
                         {/* Rezeptname */}
                         <View className="flex-col gap-3">
                             <Text style={styles.textH2}> Rezeptname </Text>
@@ -538,8 +539,8 @@ export default function CookingModeScreen() {
                                         <View className="bg-darkbackground h-[33.5px] w-[33.5px] rounded-[5px] flex items-center justify-center">
                                             <Image
                                                 source={ingredient.foundIngredient.image}
-                                                className="h-[27.5px] w-[27.5px]"
-                                            />
+                                                style={{ height: 27.5, width: 27.5 }}
+                                                />
                                         </View>
                                         <Text style={styles.text}>
                                             {ingredient.amount} {ingredient.foundIngredient.name}
