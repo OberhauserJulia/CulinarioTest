@@ -6,6 +6,7 @@ import { RouteProp } from '@react-navigation/native';
 import { HomeStackParamList } from '../components/navigation/CombinedNavigator';
 import { RecipeType } from '../context/RecipeContext';
 import { getRecipeById } from '../firebase/recipeService';
+import * as Linking from 'expo-linking';
 
 // Imports Components
 import SmallButton from '../components/SmallButton';
@@ -102,11 +103,36 @@ export default function RecipeScreen({ route, navigation }: Props) {
           <Image style={{ alignSelf: 'center' }} source={require('../assets/icons/homeIndicator.png')} />
           <Text style={styles.textH1}> {recipe.name} </Text>
 
-          <View style={styles.infoCointainer}>
-            <Text style={styles.textH2}>{recipe.source || 'Unbekannt'}</Text>
-            <View style={styles.verticalDivider} />
-            <Text style={styles.textH2}>{recipe.ovensettings || 'Keine Angabe'}</Text>
-          </View>
+          {(recipe.ovensettings && recipe.ovensettings.trim() !== '') || (recipe.source && recipe.source.trim() !== '') ? (
+            <View style={styles.infoCointainer}>
+              {recipe.ovensettings && recipe.ovensettings.trim() !== '' && (
+                <Text style={styles.textH2}>{recipe.ovensettings}</Text>
+              )}
+              {recipe.ovensettings && recipe.ovensettings.trim() !== '' && recipe.source && recipe.source.trim() !== '' && (
+                <View style={styles.verticalDivider} />
+              )}
+              {recipe.source && recipe.source.trim() !== '' ? (
+                <Text
+                  style={[styles.textH2]}
+                  onPress={() => {
+                    let url = recipe.source ?? '';
+                    if (url && !/^https?:\/\//i.test(url)) {
+                      url = 'https://' + url;
+                    }
+                    if (url) {
+                      if (typeof window !== 'undefined' && window.open) {
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
+                >
+                  Quelle ansehen
+                </Text>
+              ) : null}
+            </View>
+          ) : null}
 
           {/* Ingredients */}
           <View style={[styles.topBar, { padding: 0, paddingTop: 0 }]}>
@@ -211,6 +237,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 24,
     justifyContent: 'center',
+    alignItems: 'center',
     padding: 12,
     borderRadius: 15,
   },
