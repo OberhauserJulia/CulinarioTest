@@ -85,16 +85,18 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ visible, onClose, ing
                     <View className="flex-col w-full gap-3">
                         {selectedIngredients.map((item) => (
                             <View key={item.id} className="flex-row gap-3 items-center rounded-lg w-full">
-                                <View className="flex-row">
-                                    <TouchableOpacity onPress={() => updateAmount(item.id, -1)} className="h-[33.5px] w-[33.5px] items-center justify-center bg-darkbackground rounded-lg">
-                                        <Text className="text-white">-</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => updateAmount(item.id, 1)} className="h-[33.5px] w-[33.5px] items-center justify-center bg-darkbackground rounded-lg">
-                                        <Text className="text-white">+</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                {item.amount && item.amount.trim() !== '' ? (
+                                    <View className="flex-row">
+                                        <TouchableOpacity onPress={() => updateAmount(item.id, -1)} className="h-[33.5px] w-[33.5px] items-center justify-center bg-darkbackground rounded-lg">
+                                            <Text className="text-white">-</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => updateAmount(item.id, 1)} className="h-[33.5px] w-[33.5px] items-center justify-center bg-darkbackground rounded-lg">
+                                            <Text className="text-white">+</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                ) : null}
                                 <View className="h-[33.5px] flex-1 justify-center bg-darkbackground rounded-lg">
-                                    <Text className="text-white mx-3">{`${item.amount} ${item.name}`}</Text>
+                                    <Text className="text-white mx-3">{item.amount && item.amount.trim() !== '' ? `${item.amount} ${item.name}` : item.name}</Text>
                                 </View>
                                 <TouchableOpacity onPress={() => removeIngredient(item.id)} className="h-[33.5px] w-[33.5px] items-center justify-center ml-2">
                                     <X size={18} color="#FFFFFF" />
@@ -102,6 +104,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ visible, onClose, ing
                             </View>
                         ))}
                     </View>
+                    
                     <View className="flex-col w-full gap-3">
                         <TouchableOpacity onPress={() => setIsListVisible(!isListVisible)} className="flex-row justify-between items-center">
                             <Text className="text-sm text-gray-400 mt-3">Wähle die Zutaten aus, die du zum Zubereitungsschritt hinzufügen möchtest.</Text>
@@ -115,7 +118,7 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ visible, onClose, ing
                                         .filter((item) => !selectedIngredients.some(sel => sel.id === item.id))
                                         .map((item) => (
                                             <TouchableOpacity key={item.id} className="bg-lightbackground p-3 rounded-lg" style={{ alignSelf: 'flex-start' }} onPress={() => addIngredient(item)}>
-                                                <Text className="text-white">{`${item.amount} ${item.name}`}</Text>
+                                                <Text className="text-white">{item.amount && item.amount.trim() !== '' ? `${item.amount} ${item.name}` : item.name}</Text>
                                             </TouchableOpacity>
                                         ))
                                 ) : (

@@ -35,7 +35,9 @@ export default function StepIngredientItem({ ingredient, servings = 1 }: StepIng
     return (
         <View style={styles.ingredientItem}>
             {getIngredientImage()}
-            <Text style={styles.textBody}> {adjustedAmount} {ingredient.unit} {ingredient.name} </Text>
+            <Text style={styles.textBody}>
+                {(ingredient.amount && adjustedAmount !== 0) ? `${adjustedAmount} ${ingredient.unit} ` : ''}{ingredient.name}
+            </Text>
         </View>
     );
 }

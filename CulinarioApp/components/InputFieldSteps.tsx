@@ -74,13 +74,14 @@ export default function InputFieldSteps({ stepNumber, placeholder, description, 
               const amountMatch = ing.amount.match(/([\d,.]+)/);
               const amount = amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0;
               const unit = ing.amount.replace(/^[\d,.]+\s*/, '');
+              // Wenn amount leer oder 0, dann nur Name anzeigen (amount/unit leer übergeben)
               return (
                 <StepIngredientItem
                   key={ing.id + idx}
                   ingredient={{
                     name: ing.name,
-                    amount: amount,
-                    unit: unit,
+                    amount: (!ing.amount || amount === 0) ? 0 : amount,
+                    unit: (!ing.amount || amount === 0) ? '' : unit,
                     image: found ? found.image : undefined
                   }}
                 />

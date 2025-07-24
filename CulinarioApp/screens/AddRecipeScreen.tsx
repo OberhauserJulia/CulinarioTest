@@ -183,7 +183,7 @@ export default function CookingModeScreen() {
             updatedIngredients[index].ingredient = name;
             // Eindeutige ID für neue Zutaten
             if (!updatedIngredients[index].uniqueKey) {
-                updatedIngredients[index].uniqueKey = `custom-${Date.now()}-${Math.floor(Math.random()*100000)}`;
+                updatedIngredients[index].uniqueKey = `custom-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
             }
             updatedIngredients[index].foundIngredient = { id: updatedIngredients[index].uniqueKey, name, image: ghostImage };
             updatedIngredients[index].isEditing = false;
@@ -223,11 +223,13 @@ export default function CookingModeScreen() {
     // Hilfsfunktion: Zutatenmengen für einen Schritt berechnen (verbleibend)
     function getAvailableIngredientsForStep(stepIdx: number) {
         // Alle Zutaten aus Zutatenliste (gesamt)
-        const allIngredients = ingredientsList.filter(ing => ing.amount && ing.ingredient).map(ing => ({
-            id: ing.ingredient,
-            name: ing.ingredient,
-            amount: ing.amount
-        }));
+        const allIngredients = ingredientsList
+            .filter(ing => ing.ingredient && ing.foundIngredient)
+            .map(ing => ({
+                id: ing.ingredient,
+                name: ing.ingredient,
+                amount: ing.amount // kann leer sein
+            }));
 
         // Map: Zutat -> Gesamtmenge (als Zahl + Einheit)
         const totalMap = new Map();
@@ -252,6 +254,14 @@ export default function CookingModeScreen() {
 
         // Verfügbare Zutaten berechnen
         return allIngredients.map(ing => {
+            if (!ing.amount || ing.amount.trim() === "") {
+                // Zutaten ohne amount einfach durchreichen
+                return {
+                    id: ing.name,
+                    name: ing.name,
+                    amount: ""
+                };
+            }
             const total = totalMap.get(ing.name);
             const used = usedMap.get(ing.name) || 0;
             const available = Math.max(0, total.value - used);
@@ -260,7 +270,7 @@ export default function CookingModeScreen() {
                 name: ing.name,
                 amount: available > 0 ? `${available % 1 === 0 ? available : available.toFixed(1)}${total.unit ? ' ' + total.unit : ''}`.trim() : `0${total.unit ? ' ' + total.unit : ''}`
             };
-        }).filter(ing => parseFloat(ing.amount) > 0);
+        });
     }
 
     // Callback für InputFieldSteps, um gewählte Zutaten pro Schritt zu speichern
@@ -380,279 +390,281 @@ export default function CookingModeScreen() {
     }
 
     return (
-        <KeyboardAwareScrollView>
-            <View style={styles.container}>
-                <StatusBar style="light" />
-                {/* Top Bar */}
-                <View className="flex-row justify-between items-center pb-6">
-                    <Text style={styles.textH1}> Rezept hinzufügen </Text>
-                    <SmallButton save={true} onPress={handleSaveRecipe} />
-                </View>
-                <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-                    <View style={styles.inputContainer}>
-                        {/* Image */}
-                        <TouchableOpacity
-                            onPress={pickImage}
-                            className="flex flex-col gap-3 h-[149px] w-full bg-lightbackground border border-primary border-dashed rounded-[15px] items-center justify-center">
-                            {image ? (
-                                <Image source={{ uri: image }} resizeMode="contain" className="w-full h-full" />
-                            ) : (<>
-                                <ImagePlus size={50} color="#66A182" />
-                                <Text className="text-primary font-robotoMedium">Foto hinzufügen</Text>
-                            </>)}
-                        </TouchableOpacity>
+        <View style={styles.container}>
+            <StatusBar style="light" />
+            
+            {/* Top Bar */}
+            <View className="flex-row justify-between items-center pb-6">
+                <Text style={styles.textH1}> Rezept hinzufügen </Text>
+                <SmallButton save={true} onPress={handleSaveRecipe} />
+            </View>
+            
+            <KeyboardAwareScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                <View style={styles.inputContainer}>
+                    {/* Image */}
+                    <TouchableOpacity
+                        onPress={pickImage}
+                        className="flex flex-col gap-3 h-[149px] w-full bg-lightbackground border border-primary border-dashed rounded-[15px] items-center justify-center">
+                        {image ? (
+                            <Image source={{ uri: image }} resizeMode="contain" className="w-full h-full" />
+                        ) : (<>
+                            <ImagePlus size={50} color="#66A182" />
+                            <Text className="text-primary font-robotoMedium">Foto hinzufügen</Text>
+                        </>)}
+                    </TouchableOpacity>
 
-                        {/* Rezeptname */}
-                        <View className="flex-col gap-3">
-                            <Text style={styles.textH2}> Rezeptname </Text>
-                            <TextInput
-                                placeholder='Rezeptname eingeben'
-                                underlineColor="transparent"
-                                activeUnderlineColor="transparent"
-                                textColor="#FFFFFF"
-                                placeholderTextColor="#FFFFFF80"
-                                value={recipeName}
-                                onChangeText={setRecipeName}
-                                style={{
-                                    backgroundColor: '#222222',
-                                    color: '#FFFFFF',
-                                    borderTopLeftRadius: 15,
-                                    borderTopRightRadius: 15,
-                                    borderBottomRightRadius: 15,
-                                    borderBottomLeftRadius: 15,
-                                    fontFamily: 'Roboto-Medium',
-                                    fontSize: 16,
-                                    lineHeight: 25
-                                }}
-                            />
+                    {/* Rezeptname */}
+                    <View className="flex-col gap-3">
+                        <Text style={styles.textH2}> Rezeptname </Text>
+                        <TextInput
+                            placeholder='Rezeptname eingeben'
+                            underlineColor="transparent"
+                            activeUnderlineColor="transparent"
+                            textColor="#FFFFFF"
+                            placeholderTextColor="#FFFFFF80"
+                            value={recipeName}
+                            onChangeText={setRecipeName}
+                            style={{
+                                backgroundColor: '#222222',
+                                color: '#FFFFFF',
+                                borderTopLeftRadius: 15,
+                                borderTopRightRadius: 15,
+                                borderBottomRightRadius: 15,
+                                borderBottomLeftRadius: 15,
+                                fontFamily: 'Roboto-Medium',
+                                fontSize: 16,
+                                lineHeight: 25
+                            }}
+                        />
+                    </View>
+
+                    {/* Zusätzlich */}
+                    <View className="flex-col gap-3">
+                        <Text style={styles.textH2}> Sonstiges </Text>
+
+                        {/* Kategorie Dropdown */}
+                        <View className="w-full">
+                            <View>
+                                {showCategoryInput ? (
+                                    <View style={{ flexDirection: 'row', height: 55, alignItems: 'center', backgroundColor: '#222222', borderRadius: 15 }}>
+                                        <TextInput
+                                            placeholder='Neue Kategorie eingeben'
+                                            underlineColor="transparent"
+                                            activeUnderlineColor="transparent"
+                                            textColor="#FFFFFF"
+                                            placeholderTextColor="#FFFFFF80"
+                                            value={newCategory}
+                                            onChangeText={setNewCategory}
+                                            style={{
+                                                backgroundColor: 'transparent',
+                                                color: '#FFFFFF',
+                                                fontFamily: 'Roboto-Medium',
+                                                fontSize: 16,
+                                                flex: 1,
+                                                lineHeight: 25,
+                                            }}
+                                        />
+                                        <TouchableOpacity onPress={handleAddCategory} style={{ marginLeft: 8 }}>
+                                            <Text style={{ color: '#66A182', fontWeight: 'bold', fontSize: 18 }}>✓</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                ) : (
+                                    <TouchableOpacity
+                                        onPress={() => setShowDropdown(!showDropdown)}
+                                        style={{
+                                            backgroundColor: '#222222',
+                                            borderRadius: 15,
+                                            padding: 12,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                        }}
+                                    >
+                                        <Text style={{ color: category ? '#FFFFFF' : '#FFFFFF80', fontFamily: 'Roboto-Medium', fontSize: 16 }}>
+                                            {category || 'Kategorie auswählen'}
+                                        </Text>
+                                        <Text style={{ color: '#66A182', fontSize: 18 }}>{showDropdown ? '▲' : '▼'}</Text>
+                                    </TouchableOpacity>
+                                )}
+                                {showDropdown && !showCategoryInput && (
+                                    <View style={{ backgroundColor: '#222222', borderRadius: 15, marginTop: 4, overflow: 'hidden' }}>
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setShowDropdown(false);
+                                                setShowCategoryInput(true);
+                                            }}
+                                            style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: '#333' }}
+                                        >
+                                            <Text style={{ color: '#66A182', fontFamily: 'Roboto-Medium', fontSize: 16 }}>+ Kategorie hinzufügen</Text>
+                                        </TouchableOpacity>
+                                        {categoryOptions.map((option, idx) => (
+                                            <TouchableOpacity
+                                                key={option}
+                                                onPress={() => {
+                                                    setCategory(option);
+                                                    setShowDropdown(false);
+                                                }}
+                                                style={{ padding: 12, borderBottomWidth: idx < categoryOptions.length - 1 ? 1 : 0, borderBottomColor: '#333' }}
+                                            >
+                                                <Text style={{ color: '#FFFFFF', fontFamily: 'Roboto-Medium', fontSize: 16 }}>{option}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                )}
+                            </View>
                         </View>
 
-                        {/* Zusätzlich */}
-                        <View className="flex-col gap-3">
-                            <Text style={styles.textH2}> Sonstiges </Text>
-
-                            {/* Kategorie Dropdown */}
-                            <View className="w-full">
-                                <View>
-                                    {showCategoryInput ? (
-                                        <View style={{ flexDirection: 'row', height: 55, alignItems: 'center', backgroundColor: '#222222', borderRadius: 15 }}>
-                                            <TextInput
-                                                placeholder='Neue Kategorie eingeben'
-                                                underlineColor="transparent"
-                                                activeUnderlineColor="transparent"
-                                                textColor="#FFFFFF"
-                                                placeholderTextColor="#FFFFFF80"
-                                                value={newCategory}
-                                                onChangeText={setNewCategory}
-                                                style={{
-                                                    backgroundColor: 'transparent',
-                                                    color: '#FFFFFF',
-                                                    fontFamily: 'Roboto-Medium',
-                                                    fontSize: 16,
-                                                    flex: 1,
-                                                    lineHeight: 25,
-                                                }}
+                        <TextInput
+                            placeholder='Menge'
+                            underlineColor="transparent"
+                            activeUnderlineColor="transparent"
+                            textColor="#FFFFFF"
+                            placeholderTextColor="#FFFFFF80"
+                            value={miscAmount}
+                            onChangeText={setMiscAmount}
+                            style={{
+                                backgroundColor: '#222222',
+                                color: '#FFFFFF',
+                                borderTopLeftRadius: 15,
+                                borderTopRightRadius: 15,
+                                borderBottomRightRadius: 15,
+                                borderBottomLeftRadius: 15,
+                                fontFamily: 'Roboto-Medium',
+                                fontSize: 16,
+                                lineHeight: 25,
+                                flex: 1,
+                            }}
+                        />
+                        <TextInput
+                            placeholder='Ofeneinstellung'
+                            underlineColor="transparent"
+                            activeUnderlineColor="transparent"
+                            textColor="#FFFFFF"
+                            placeholderTextColor="#FFFFFF80"
+                            value={ovenSetting}
+                            onChangeText={setOvenSetting}
+                            style={{
+                                backgroundColor: '#222222',
+                                color: '#FFFFFF',
+                                borderTopLeftRadius: 15,
+                                borderTopRightRadius: 15,
+                                borderBottomRightRadius: 15,
+                                borderBottomLeftRadius: 15,
+                                fontFamily: 'Roboto-Medium',
+                                fontSize: 16,
+                                lineHeight: 25,
+                            }}
+                        />
+                        <TextInput
+                            placeholder='Quelle'
+                            underlineColor="transparent"
+                            activeUnderlineColor="transparent"
+                            textColor="#FFFFFF"
+                            placeholderTextColor="#FFFFFF80"
+                            value={source}
+                            onChangeText={setSource}
+                            style={{
+                                backgroundColor: '#222222',
+                                color: '#FFFFFF',
+                                borderTopLeftRadius: 15,
+                                borderTopRightRadius: 15,
+                                borderBottomRightRadius: 15,
+                                borderBottomLeftRadius: 15,
+                                fontFamily: 'Roboto-Medium',
+                                fontSize: 16,
+                                lineHeight: 25,
+                            }}
+                        />
+                    </View>
+                    
+                    {/* Zutaten */}
+                    <View style={styles.topBarInput}>
+                        <Text style={styles.textH2}> Zutaten </Text>
+                        <SmallButton plus={true} onPress={addIngredient} />
+                    </View>
+                    
+                    {/* Zutatenliste */}
+                    {ingredientsList.map((ingredient, index) => {
+                        // Eindeutigen Key pro Zutat verwenden
+                        const key = ingredient.uniqueKey || (ingredient.foundIngredient && ingredient.foundIngredient.id) || `fallback-${index}`;
+                        return (
+                            <View key={key}>
+                                {ingredient.foundIngredient && !ingredient.isEditing ? (
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
+                                        onPress={() => handleToggleEdit(index, true)}
+                                        className="flex flex-row items-center gap-[12px] bg-lightbackground w-full h-[55px] p-[12px] rounded-[15px]"
+                                    >
+                                        <View className="bg-darkbackground h-[33.5px] w-[33.5px] rounded-[5px] flex items-center justify-center">
+                                            <Image
+                                                source={ingredient.foundIngredient.image}
+                                                style={{ height: 27.5, width: 27.5 }}
                                             />
-                                            <TouchableOpacity onPress={handleAddCategory} style={{ marginLeft: 8 }}>
-                                                <Text style={{ color: '#66A182', fontWeight: 'bold', fontSize: 18 }}>✓</Text>
-                                            </TouchableOpacity>
                                         </View>
-                                    ) : (
-                                        <TouchableOpacity
-                                            onPress={() => setShowDropdown(!showDropdown)}
+                                        <Text style={styles.text}>
+                                            {ingredient.amount ? `${ingredient.amount} ` : ''}{ingredient.foundIngredient.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <View className="flex-row gap-3 w-full">
+                                        <TextInput
+                                            placeholder='Menge und Zutat, z.B. "2 EL Butter"'
+                                            underlineColor="transparent"
+                                            activeUnderlineColor="transparent"
+                                            textColor="#FFFFFF"
+                                            placeholderTextColor="#FFFFFF80"
+                                            value={ingredient.input}
+                                            onChangeText={(value) => handleIngredientInputChange(index, value)}
                                             style={{
                                                 backgroundColor: '#222222',
-                                                borderRadius: 15,
-                                                padding: 12,
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
+                                                color: '#FFFFFF',
+                                                borderTopLeftRadius: 15,
+                                                borderTopRightRadius: 15,
+                                                borderBottomRightRadius: 15,
+                                                borderBottomLeftRadius: 15,
+                                                fontFamily: 'Roboto-Medium',
+                                                fontSize: 16,
+                                                lineHeight: 25,
+                                                flex: 1,
                                             }}
-                                        >
-                                            <Text style={{ color: category ? '#FFFFFF' : '#FFFFFF80', fontFamily: 'Roboto-Medium', fontSize: 16 }}>
-                                                {category || 'Kategorie auswählen'}
-                                            </Text>
-                                            <Text style={{ color: '#66A182', fontSize: 18 }}>{showDropdown ? '▲' : '▼'}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                    {showDropdown && !showCategoryInput && (
-                                        <View style={{ backgroundColor: '#222222', borderRadius: 15, marginTop: 4, overflow: 'hidden' }}>
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    setShowDropdown(false);
-                                                    setShowCategoryInput(true);
-                                                }}
-                                                style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: '#333' }}
-                                            >
-                                                <Text style={{ color: '#66A182', fontFamily: 'Roboto-Medium', fontSize: 16 }}>+ Kategorie hinzufügen</Text>
-                                            </TouchableOpacity>
-                                            {categoryOptions.map((option, idx) => (
-                                                <TouchableOpacity
-                                                    key={option}
-                                                    onPress={() => {
-                                                        setCategory(option);
-                                                        setShowDropdown(false);
-                                                    }}
-                                                    style={{ padding: 12, borderBottomWidth: idx < categoryOptions.length - 1 ? 1 : 0, borderBottomColor: '#333' }}
-                                                >
-                                                    <Text style={{ color: '#FFFFFF', fontFamily: 'Roboto-Medium', fontSize: 16 }}>{option}</Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </View>
-                                    )}
-                                </View>
-                            </View>
-
-                            <TextInput
-                                placeholder='Menge'
-                                underlineColor="transparent"
-                                activeUnderlineColor="transparent"
-                                textColor="#FFFFFF"
-                                placeholderTextColor="#FFFFFF80"
-                                value={miscAmount}
-                                onChangeText={setMiscAmount}
-                                style={{
-                                    backgroundColor: '#222222',
-                                    color: '#FFFFFF',
-                                    borderTopLeftRadius: 15,
-                                    borderTopRightRadius: 15,
-                                    borderBottomRightRadius: 15,
-                                    borderBottomLeftRadius: 15,
-                                    fontFamily: 'Roboto-Medium',
-                                    fontSize: 16,
-                                    lineHeight: 25,
-                                    flex: 1,
-                                }}
-                            />
-                            <TextInput
-                                placeholder='Ofeneinstellung'
-                                underlineColor="transparent"
-                                activeUnderlineColor="transparent"
-                                textColor="#FFFFFF"
-                                placeholderTextColor="#FFFFFF80"
-                                value={ovenSetting}
-                                onChangeText={setOvenSetting}
-                                style={{
-                                    backgroundColor: '#222222',
-                                    color: '#FFFFFF',
-                                    borderTopLeftRadius: 15,
-                                    borderTopRightRadius: 15,
-                                    borderBottomRightRadius: 15,
-                                    borderBottomLeftRadius: 15,
-                                    fontFamily: 'Roboto-Medium',
-                                    fontSize: 16,
-                                    lineHeight: 25,
-                                }}
-                            />
-                            <TextInput
-                                placeholder='Quelle'
-                                underlineColor="transparent"
-                                activeUnderlineColor="transparent"
-                                textColor="#FFFFFF"
-                                placeholderTextColor="#FFFFFF80"
-                                value={source}
-                                onChangeText={setSource}
-                                style={{
-                                    backgroundColor: '#222222',
-                                    color: '#FFFFFF',
-                                    borderTopLeftRadius: 15,
-                                    borderTopRightRadius: 15,
-                                    borderBottomRightRadius: 15,
-                                    borderBottomLeftRadius: 15,
-                                    fontFamily: 'Roboto-Medium',
-                                    fontSize: 16,
-                                    lineHeight: 25,
-                                }}
-                            />
-                        </View>
-                        {/* Zutaten */}
-                        <View style={styles.topBarInput}>
-                            <Text style={styles.textH2}> Zutaten </Text>
-                            <SmallButton plus={true} onPress={addIngredient} />
-                        </View>
-                        {/* Zutatenliste */}
-                        {ingredientsList.map((ingredient, index) => {
-                            // Eindeutigen Key pro Zutat verwenden
-                            const key = ingredient.uniqueKey || (ingredient.foundIngredient && ingredient.foundIngredient.id) || `fallback-${index}`;
-                            return (
-                                <View key={key}>
-                                    {ingredient.foundIngredient && ingredient.amount && !ingredient.isEditing ? (
+                                        />
                                         <TouchableOpacity
-                                            activeOpacity={0.8}
-                                            onPress={() => handleToggleEdit(index, true)}
-                                            className="flex flex-row items-center gap-[12px] bg-lightbackground w-full h-[55px] p-[12px] rounded-[15px]"
+                                            onPress={() => handleSaveIngredient(index)}
+                                            style={{ marginLeft: 8, justifyContent: 'center' }}
                                         >
-                                            <View className="bg-darkbackground h-[33.5px] w-[33.5px] rounded-[5px] flex items-center justify-center">
-                                                <Image
-                                                    source={ingredient.foundIngredient.image}
-                                                    style={{ height: 27.5, width: 27.5 }}
-                                                />
-                                            </View>
-                                            <Text style={styles.text}>
-                                                {ingredient.amount} {ingredient.foundIngredient.name}
-                                            </Text>
+                                            <Text style={{ color: '#66A182', fontWeight: 'bold', fontSize: 18 }}>✓</Text>
                                         </TouchableOpacity>
-                                    ) : (
-                                        <View className="flex-row gap-3 w-full">
-                                            <TextInput
-                                                placeholder='Menge und Zutat, z.B. "2 EL Butter"'
-                                                underlineColor="transparent"
-                                                activeUnderlineColor="transparent"
-                                                textColor="#FFFFFF"
-                                                placeholderTextColor="#FFFFFF80"
-                                                value={ingredient.input}
-                                                onChangeText={(value) => handleIngredientInputChange(index, value)}
-                                                style={{
-                                                    backgroundColor: '#222222',
-                                                    color: '#FFFFFF',
-                                                    borderTopLeftRadius: 15,
-                                                    borderTopRightRadius: 15,
-                                                    borderBottomRightRadius: 15,
-                                                    borderBottomLeftRadius: 15,
-                                                    fontFamily: 'Roboto-Medium',
-                                                    fontSize: 16,
-                                                    lineHeight: 25,
-                                                    flex: 1,
-                                                }}
-                                            />
-                                            <TouchableOpacity
-                                                onPress={() => handleSaveIngredient(index)}
-                                                style={{ marginLeft: 8, justifyContent: 'center' }}
-                                            >
-                                                <Text style={{ color: '#66A182', fontWeight: 'bold', fontSize: 18 }}>✓</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )}
-                                </View>
-                            );
-                        })}
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    })}
 
-                        {/* Zubereitungsschritte */}
-                        <View style={styles.topBarInput}>
-                            <Text style={styles.textH2}> Zubereitungsschritte </ Text>
-                            <SmallButton plus={true} onPress={addStep} />
-                        </View>
-                        {steps.map((step, index) => (
-                            <InputFieldSteps
-                                key={index}
-                                stepNumber={step.stepNumber}
-                                placeholder="Zubereitungsschritt beschreiben"
-                                description={step.text}
-                                onDescriptionChange={text => {
-                                    setSteps(prev => {
-                                        const copy = [...prev];
-                                        copy[index] = { ...copy[index], text };
-                                        return copy;
-                                    });
-                                }}
-                                ingredients={getAvailableIngredientsForStep(index)}
-                                onIngredientsChange={selected => handleStepIngredientsChange(index, selected)}
-                            />
-                        ))}
+                    {/* Zubereitungsschritte */}
+                    <View style={styles.topBarInput}>
+                        <Text style={styles.textH2}> Zubereitungsschritte </ Text>
+                        <SmallButton plus={true} onPress={addStep} />
                     </View>
-                </ScrollView>
-            </View>
-        </KeyboardAwareScrollView>
+                    {steps.map((step, index) => (
+                        <InputFieldSteps
+                            key={index}
+                            stepNumber={step.stepNumber}
+                            placeholder="Zubereitungsschritt beschreiben"
+                            description={step.text}
+                            onDescriptionChange={text => {
+                                setSteps(prev => {
+                                    const copy = [...prev];
+                                    copy[index] = { ...copy[index], text };
+                                    return copy;
+                                });
+                            }}
+                            ingredients={getAvailableIngredientsForStep(index)}
+                            onIngredientsChange={selected => handleStepIngredientsChange(index, selected)}
+                        />
+                    ))}
+                </View>
+            </KeyboardAwareScrollView>
+        </View>
     );
 }
 
@@ -672,12 +684,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#161616',
         paddingTop: 24,
         paddingBottom: 114,
-    },
-
-    topBar: {
-        flexDirection: 'row',
-        gap: 24,
-        alignItems: 'center',
     },
 
     topBarInput: {
