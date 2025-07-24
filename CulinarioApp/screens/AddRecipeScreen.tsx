@@ -241,9 +241,10 @@ export default function CookingModeScreen() {
             totalMap.set(ing.name, { value, unit });
         });
 
-        // Map: Zutat -> bereits verwendete Menge in vorherigen Schritten
+        // Map: Zutat -> bereits verwendete Menge in allen anderen Schritten (außer dem aktuellen)
         const usedMap = new Map();
-        for (let i = 0; i < stepIdx; i++) {
+        for (let i = 0; i < stepIngredients.length; i++) {
+            if (i === stepIdx) continue;
             (stepIngredients[i] || []).forEach(ing => {
                 const match = ing.amount.match(/([\d,.]+)/);
                 const value = match ? parseFloat(match[1].replace(',', '.')) : 0;
@@ -252,7 +253,7 @@ export default function CookingModeScreen() {
             });
         }
 
-        // Verfügbare Zutaten berechnen
+        // Verfügbare Zutaten berechnen (Restmenge = Gesamtmenge - Summe aller anderen Schritte)
         return allIngredients.map(ing => {
             if (!ing.amount || ing.amount.trim() === "") {
                 // Zutaten ohne amount einfach durchreichen
