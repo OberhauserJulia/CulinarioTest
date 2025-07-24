@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Settings, ArrowLeft, ShoppingCart, EllipsisVertical, Plus, Save } from 'lucide-react-native';
+import { Settings, ArrowLeft, ShoppingCart, EllipsisVertical, Plus, Save, Timer } from 'lucide-react-native';
 
 interface SmallButtonProps {
   settings?: boolean;
@@ -10,10 +10,11 @@ interface SmallButtonProps {
   plus?: boolean;
   shoppingCart?: boolean;
   save?: boolean;
+  clock?: boolean;
   onPress?: () => void;
 }
 
-export default function SmallButton({ settings, dots, back, plus, shoppingCart, save, onPress }: SmallButtonProps) {
+export default function SmallButton({ settings, dots, back, plus, shoppingCart, save, clock, onPress }: SmallButtonProps) {
   const navigation = useNavigation();
 
   const handlePress = () => {
@@ -35,6 +36,7 @@ export default function SmallButton({ settings, dots, back, plus, shoppingCart, 
         {dots && <EllipsisVertical size={'100%'} color="white"/>}
         {back && <ArrowLeft size={'100%'} color="white"/>}
         {plus && <Plus size={'100%'} color="white"/>}
+        {clock && <Timer size={'100%'} color="white"/>}
         {shoppingCart && <ShoppingCart size={'100%'} color="white"/>}
         {save && <Save size={'100%'} color="white"/>}
     </TouchableOpacity>

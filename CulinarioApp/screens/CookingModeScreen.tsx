@@ -12,7 +12,7 @@ import StepIngredientItem from '../components/StepIngredientItem';
 type CookingModeScreenRouteProp = RouteProp<HomeStackParamList, 'CookingMode'>;
 
 type Props = {
-  route: CookingModeScreenRouteProp;
+    route: CookingModeScreenRouteProp;
 };
 
 export default function CookingModeScreen({ route }: Props) {
@@ -40,7 +40,7 @@ export default function CookingModeScreen({ route }: Props) {
 
     if (loading) {
         return (
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#161616' }]}> 
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#161616' }]}>
                 <ActivityIndicator size="large" color="#66A182" />
                 <Text style={[styles.textH1, { marginTop: 16 }]}>Lade Rezept...</Text>
             </View>
@@ -49,7 +49,7 @@ export default function CookingModeScreen({ route }: Props) {
 
     if (error || !recipe || !recipe.preparationSteps || recipe.preparationSteps.length === 0) {
         return (
-            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#161616' }]}> 
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#161616' }]}>
                 <Text style={[styles.textH1, { color: '#ff6b6b', textAlign: 'center', marginHorizontal: 24 }]}> {error || 'Keine Schritte gefunden'} </Text>
             </View>
         );
@@ -59,15 +59,15 @@ export default function CookingModeScreen({ route }: Props) {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <StatusBar style="light" />
+            <StatusBar style="light" />
 
-                {/* Top Bar */}
-                <View style={styles.topBar}>
-                    <SmallButton back={true} />
-                    <SmallButton dots={true} />
-                </View>
-
+            {/* Top Bar */}
+            <View style={styles.topBar}>
+                <SmallButton back={true} />
+                <SmallButton clock={true} />
+            </View>
+            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                {/* Step Number and Description */}
                 <View style={styles.stepNumber}>
                     <Text style={styles.textH1}>{step.stepNumber}. Schritt</Text>
                 </View>
@@ -86,14 +86,14 @@ export default function CookingModeScreen({ route }: Props) {
             {/* Fixed Big Button */}
             <View style={styles.fixedButtonContainer}>
                 <BigButton
-                    forward={true}
-                    onPress={() => setStepIndex((prev) => Math.min(prev + 1, recipe.preparationSteps.length - 1))}
-                    disabled={stepIndex === recipe.preparationSteps.length - 1}
-                />
-                <BigButton
                     back={true}
                     onPress={() => setStepIndex((prev) => Math.max(prev - 1, 0))}
                     disabled={stepIndex === 0}
+                />
+                <BigButton
+                    forward={true}
+                    onPress={() => setStepIndex((prev) => Math.min(prev + 1, recipe.preparationSteps.length - 1))}
+                    disabled={stepIndex === recipe.preparationSteps.length - 1}
                 />
             </View>
         </View>
@@ -104,17 +104,18 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
+        paddingTop: 48,
+        paddingLeft: 24,
+        paddingRight: 24,
         flexDirection: 'column',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#161616',
     },
 
     scrollContainer: {
         flex: 1,
         flexDirection: 'column',
         gap: 24,
-        backgroundColor: '#161616',
-        padding: 24,
-        paddingTop: 68,
+        paddingTop: 24,
     },
 
     topBar: {

@@ -43,7 +43,7 @@ export default function HomeScreen({ navigation }: Props) {
   }
 
   return (
-    <View className="flex-1 h-full flex-col gap-6 bg-darkbackground p-6 pt-[68px]">
+    <View className="flex-1 h-full flex-col gap-6 bg-darkbackground p-6 pt-[48px]">
       <StatusBar style="light" />
 
       {/* Filter Bar */}

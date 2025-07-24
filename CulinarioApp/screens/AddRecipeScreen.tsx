@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        paddingTop: 68,
+        paddingTop: 48,
         backgroundColor: '#161616',
         paddingHorizontal: 24,
     },

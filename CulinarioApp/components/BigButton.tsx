@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { MoveLeft, MoveRight } from 'lucide-react-native';
 
 interface BigButtonProps {
   cookingMode?: boolean;
@@ -8,26 +9,39 @@ interface BigButtonProps {
   saveIngredients?: boolean;
   addArticle?: boolean;
   onPress?: () => void;
+  disabled?: boolean;
 }
 
-export default function BigButton({ cookingMode, forward, back, saveIngredients, addArticle, onPress }: BigButtonProps) {
+export default function BigButton({ cookingMode, forward, back, saveIngredients, addArticle, onPress, disabled }: BigButtonProps) {
+  const getButtonStyle = (extraStyle = {}) => [
+    styles.button,
+    extraStyle,
+    disabled ? { opacity: 0.5 } : {},
+  ];
+  const handlePress = disabled ? undefined : onPress;
   return (
     <>
       {cookingMode && (
-        <TouchableOpacity style={[styles.button, { width: '100%' }]} onPress={onPress} activeOpacity={0.8}>
-          <Image source={require('../assets/icons/cook.png')} />
+        <TouchableOpacity style={getButtonStyle({ width: '100%' })} onPress={handlePress} activeOpacity={0.8} disabled={disabled}>
+          <Image className="h-[16px]" source={require('../assets/icons/cook.png')} />
           <Text style={styles.textH2}>Kochmodus </Text>
         </TouchableOpacity>
       )}
 
       {forward && (
-        <TouchableOpacity style={[styles.button, { flex: 1 }]} onPress={onPress} activeOpacity={0.8}>
-          <Image source={require('../assets/icons/cook.png')} />
+        <TouchableOpacity style={getButtonStyle({ flex: 1 })} onPress={handlePress} activeOpacity={0.8} disabled={disabled}>
+          <MoveRight size={'100%'} color="white" />
+        </TouchableOpacity>
+      )}
+
+      {back && (
+        <TouchableOpacity style={getButtonStyle({ flex: 1 })} onPress={handlePress} activeOpacity={0.8} disabled={disabled}>
+          <MoveLeft size={'100%'} color="white" />
         </TouchableOpacity>
       )}
 
       {saveIngredients && (
-        <TouchableOpacity style={[styles.button, { width: '100%' }]} onPress={onPress} activeOpacity={0.8}>
+        <TouchableOpacity style={getButtonStyle({ width: '100%' })} onPress={handlePress} activeOpacity={0.8} disabled={disabled}>
           <Text style={styles.textH2}> Zutaten speichern </Text>
         </TouchableOpacity>
       )}
@@ -45,11 +59,7 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: 'row',
     gap: 12,
-  },
-
-  image: {
-    width: '100%',
-    height: '100%',
+    height: 55,
   },
 
   textH2: {
