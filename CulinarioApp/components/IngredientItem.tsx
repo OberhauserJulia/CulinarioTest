@@ -36,7 +36,6 @@ export default function IngredientItem({ ingredient, servings = 1, originalServi
     
     // Fallback-Bild: Geist verwenden
     return (
-      console.log('Verwende Fallback-Bild für Zutat:', ingredient.name),
       <Image style={styles.image} source={require('../assets/ingredientImages/ghost.png')} />
     );
   };

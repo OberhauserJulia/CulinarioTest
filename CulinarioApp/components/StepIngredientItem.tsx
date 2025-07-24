@@ -29,13 +29,10 @@ const StepIngredientItem: React.FC<StepIngredientItemProps> = ({ ingredient, ser
             return <Image style={styles.image} source={foundIngredient.image} />;
         }
         
-        // Falls in ingredient.image eine URI vorhanden ist, diese verwenden
-        if (ingredient.image) {
-            return <Image style={styles.image} source={{ uri: ingredient.image }} />;
-        }
-        
         // Fallback-Bild verwenden
-        return <Image style={styles.image} source={require('../assets/ingredientImages/milkproducts/butter.png')} />;
+        return (
+        <Image style={styles.image} source={require('../assets/ingredientImages/ghost.png')} />
+        );
     };
 
     return (
