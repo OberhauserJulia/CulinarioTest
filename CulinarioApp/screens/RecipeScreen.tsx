@@ -46,6 +46,12 @@ export default function RecipeScreen({ route, navigation }: Props) {
         setError(null);
         const fetchedRecipe = await getRecipeById(recipeId);
         setRecipe(fetchedRecipe);
+        // Setze servings auf den Wert aus dem geladenen Rezept, falls vorhanden
+        if (fetchedRecipe && typeof fetchedRecipe.servings === 'number') {
+          setServings(fetchedRecipe.servings);
+        } else {
+          setServings(2); // Fallback falls nicht vorhanden
+        }
         console.log('Geladenes Rezeptbild:', fetchedRecipe?.image);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Fehler beim Laden des Rezepts');
@@ -53,7 +59,6 @@ export default function RecipeScreen({ route, navigation }: Props) {
         setLoading(false);
       }
     };
-    
     loadRecipe();
   }, [recipeId]);
 
@@ -132,6 +137,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
                 key={index} 
                 ingredient={ingredient} 
                 servings={servings} 
+                originalServings={ingredient.originalServings || 2}
               />
             ))}
           </View>

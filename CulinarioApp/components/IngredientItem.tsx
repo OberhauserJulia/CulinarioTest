@@ -6,11 +6,19 @@ import { ingredients } from '../data/ingredients';
 interface IngredientItemProps {
   ingredient: IngredientType;
   servings?: number;
+  originalServings?: number;
 }
 
-export default function IngredientItem({ ingredient, servings = 1 }: IngredientItemProps) {
-  // Berechne die angepasste Menge basierend auf der Portionsanzahl
-  const adjustedAmount = ingredient.amount * servings;
+
+export default function IngredientItem({ ingredient, servings = 1, originalServings = 1 }: IngredientItemProps) {
+  // Logge das übergebene Ingredient beim Laden der Komponente
+  //console.log('IngredientItem geladen mit ingredient:', ingredient);
+  // Die Menge ist bereits für originalServings berechnet, nur anpassen wenn servings abweicht
+  let adjustedAmount = ingredient.amount;
+  if (servings && originalServings && servings !== originalServings) {
+    adjustedAmount = ingredient.amount * (servings / originalServings);
+  }
+  //console.log('Angepasste Menge:', adjustedAmount, ingredient.unit, 'servings:', servings, 'originalServings:', originalServings);
 
   // Funktion zum Rendern des Bildes
   const getIngredientImage = () => {
@@ -35,10 +43,12 @@ export default function IngredientItem({ ingredient, servings = 1 }: IngredientI
 
   return (
     <View style={styles.container}>
-            <View style={styles.imageContainer}>
-                {getIngredientImage()}
-            </View>
-            <Text style={styles.textBody}>{adjustedAmount} {ingredient.unit} {ingredient.name}</Text>
+      <View style={styles.imageContainer}>
+        {getIngredientImage()}
+      </View>
+      <Text style={styles.textBody}>
+        {Number.isFinite(adjustedAmount) ? adjustedAmount % 1 === 0 ? adjustedAmount : adjustedAmount.toFixed(2) : adjustedAmount} {ingredient.unit} {ingredient.name}
+      </Text>
     </View>
   );
 }

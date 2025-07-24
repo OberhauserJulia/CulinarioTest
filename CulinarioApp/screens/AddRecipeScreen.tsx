@@ -277,10 +277,11 @@ export default function CookingModeScreen() {
             const total = totalMap.get(ing.name);
             const used = usedMap.get(ing.name) || 0;
             const available = Math.max(0, total.value - used);
+            // Immer zwei Nachkommastellen anzeigen
             return {
                 id: ing.name,
                 name: ing.name,
-                amount: available > 0 ? `${available % 1 === 0 ? available : available.toFixed(1)}${total.unit ? ' ' + total.unit : ''}`.trim() : `0${total.unit ? ' ' + total.unit : ''}`
+                amount: available > 0 ? `${available.toFixed(2)}${total.unit ? ' ' + total.unit : ''}`.trim() : `0${total.unit ? ' ' + total.unit : ''}`
             };
         });
     }

@@ -32,10 +32,10 @@ const IngredientModal: React.FC<IngredientModalProps> = ({ visible, onClose, ing
         return { value: 1, unit: amount };
     }
 
-    function formatAmount(value: number, unit: string): string {
-        // Zeige max. eine Nachkommastelle
-        return `${value % 1 === 0 ? value : value.toFixed(1)}${unit ? ' ' + unit : ''}`.trim();
-    }
+function formatAmount(value: number, unit: string): string {
+    // Immer zwei Nachkommastellen anzeigen
+    return `${value.toFixed(2)}${unit ? ' ' + unit : ''}`.trim();
+}
 
     const addIngredient = (ingredient: Ingredient) => {
         setSelectedIngredients((prev: SelectedIngredient[]) => {

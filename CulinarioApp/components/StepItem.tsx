@@ -25,6 +25,7 @@ export default function StepItem({ step, servings = 1 }: StepItemProps) {
                 key={`${step.stepNumber}-${index}`} 
                 ingredient={ingredient} 
                 servings={servings} 
+                originalServings={ingredient.originalServings || 2}
               />
             ))}
           </View>

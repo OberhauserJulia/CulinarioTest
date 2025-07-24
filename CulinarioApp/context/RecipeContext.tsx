@@ -17,6 +17,7 @@ export type IngredientType = {
   name: string;
   amount: number;
   unit: string;
+  originalServings?: number; // Anzahl der Portionen, auf die sich amount ursprünglich bezieht
 };
 
 export type PreparationStepType = {

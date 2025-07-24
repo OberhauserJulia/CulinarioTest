@@ -3,14 +3,20 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import { IngredientType } from '../context/RecipeContext';
 import { ingredients } from '../data/ingredients';
 
+
 interface StepIngredientItemProps {
   ingredient: IngredientType;
   servings?: number;
+  originalServings?: number;
 }
 
-export default function StepIngredientItem({ ingredient, servings = 1 }: StepIngredientItemProps) {
-    // Berechne die angepasste Menge basierend auf der Portionsanzahl
-    const adjustedAmount = ingredient.amount * servings;
+const StepIngredientItem: React.FC<StepIngredientItemProps> = ({ ingredient, servings = 1, originalServings }) => {
+    // Berechne die angepasste Menge basierend auf der Portionsanzahl und Original-Portionen
+    const origServings = typeof originalServings === 'number' ? originalServings : (typeof ingredient.originalServings === 'number' ? ingredient.originalServings : 2);
+    let adjustedAmount = ingredient.amount;
+    if (servings && origServings && servings !== origServings) {
+        adjustedAmount = ingredient.amount * (servings / origServings);
+    }
 
     // Funktion zum Rendern des Bildes
     const getIngredientImage = () => {
@@ -36,11 +42,16 @@ export default function StepIngredientItem({ ingredient, servings = 1 }: StepIng
         <View style={styles.ingredientItem}>
             {getIngredientImage()}
             <Text style={styles.textBody}>
-                {(ingredient.amount && adjustedAmount !== 0) ? `${adjustedAmount} ${ingredient.unit} ` : ''}{ingredient.name}
+                {(ingredient.amount && adjustedAmount !== 0)
+                  ? `${Number.isFinite(adjustedAmount) ? (adjustedAmount % 1 === 0 ? adjustedAmount : adjustedAmount.toFixed(2)) : adjustedAmount} ${ingredient.unit} `
+                  : ''}{ingredient.name}
             </Text>
         </View>
     );
-}
+};
+
+export default StepIngredientItem;
+
 
 const styles = StyleSheet.create({
 
