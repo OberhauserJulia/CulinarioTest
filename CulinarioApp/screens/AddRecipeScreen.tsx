@@ -54,7 +54,7 @@ export default function CookingModeScreen() {
     const [showDropdown, setShowDropdown] = useState(false);
     const [showCategoryInput, setShowCategoryInput] = useState(false);
     const [newCategory, setNewCategory] = useState("");
-    const [categoryOptions, setCategoryOptions] = useState(["Vorspeise", "Hauptspeise", "Nachspeise"]);
+    const [categoryOptions, setCategoryOptions] = useState(["Vorspeise", "Hauptgericht", "Dessert"]);
 
     function handleAddCategory() {
         if (newCategory.trim() && !categoryOptions.includes(newCategory.trim())) {
@@ -144,11 +144,23 @@ export default function CookingModeScreen() {
 
 
     // Funktion zum Verarbeiten der Zutaten-Eingabe
-    // Nur ein Eingabefeld für Menge und Zutat
+    // Automatisches Hinzufügen eines neuen Feldes, wenn das letzte Feld ausgefüllt ist
     const handleIngredientInputChange = (index: number, value: string) => {
+        const wasLastEmpty = ingredientsList[ingredientsList.length - 1].input.trim() === "";
         const updatedIngredients = [...ingredientsList];
         updatedIngredients[index].input = value;
         setIngredientsList(updatedIngredients);
+        // Wenn das letzte Feld vor der Änderung leer war und jetzt nicht mehr, neues Feld anhängen
+        if (
+            index === ingredientsList.length - 1 &&
+            wasLastEmpty &&
+            value.trim() !== ""
+        ) {
+            setIngredientsList(prev => [
+                ...prev,
+                { input: "", amount: "", ingredient: "", foundIngredient: null, isEditing: true, uniqueKey: `auto-${Date.now()}-${Math.floor(Math.random() * 100000)}` }
+            ]);
+        }
     };
 
     // Beim Speichern: Trennen und prüfen
@@ -215,14 +227,9 @@ export default function CookingModeScreen() {
 
 
     // Schritt hinzufügen und stepIngredients mit leerem Array erweitern
-    const addStep = () => {
-        setSteps(prev => [...prev, { text: "", stepNumber: prev.length + 1 }]);
-        setStepIngredients(prev => [...prev, []]);
-    };
+    // addStep bleibt für manuellen Button, aber automatische Logik kommt in onDescriptionChange
 
-    const addIngredient = () => {
-        setIngredientsList([...ingredientsList, { input: "", amount: "", ingredient: "", foundIngredient: null, isEditing: true }]);
-    };
+    // addIngredient entfernt, da Plus-Button entfällt
 
     // Hilfsfunktion: Zutatenmengen für einen Schritt berechnen (verbleibend)
     function getAvailableIngredientsForStep(stepIdx: number) {
@@ -291,7 +298,7 @@ export default function CookingModeScreen() {
     function buildIngredientsForRecipe() {
         // ingredientsList: [{ amount, ingredient, foundIngredient }]
         return ingredientsList
-            .filter(ing => ing.amount && ing.ingredient && ing.foundIngredient)
+            .filter(ing => ing.input.trim() !== "" && ing.amount && ing.ingredient && ing.foundIngredient)
             .map(ing => {
                 // Versuche Menge und Einheit zu trennen
                 const match = ing.amount.match(/([\d,.]+)/);
@@ -585,7 +592,7 @@ export default function CookingModeScreen() {
                     {/* Zutaten */}
                     <View style={styles.topBarInput}>
                         <Text style={styles.textH2}> Zutaten </Text>
-                        <SmallButton plus={true} onPress={addIngredient} />
+                        {/* Plus-Button entfernt */}
                     </View>
                     
                     {/* Zutatenliste */}
@@ -648,7 +655,7 @@ export default function CookingModeScreen() {
                     {/* Zubereitungsschritte */}
                     <View style={styles.topBarInput}>
                         <Text style={styles.textH2}> Zubereitungsschritte </ Text>
-                        <SmallButton plus={true} onPress={addStep} />
+                        {/* Plus-Button entfernt, Schritte werden automatisch hinzugefügt */}
                     </View>
                     {steps.map((step, index) => (
                         <InputFieldSteps
@@ -657,9 +664,19 @@ export default function CookingModeScreen() {
                             placeholder="Zubereitungsschritt beschreiben"
                             description={step.text}
                             onDescriptionChange={text => {
+                                const wasLastEmpty = steps[steps.length - 1].text.trim() === "";
                                 setSteps(prev => {
                                     const copy = [...prev];
                                     copy[index] = { ...copy[index], text };
+                                    // Automatisch neues Feld anhängen, wenn letztes Feld vor Änderung leer war und jetzt nicht mehr
+                                    if (
+                                        index === prev.length - 1 &&
+                                        wasLastEmpty &&
+                                        text.trim() !== ""
+                                    ) {
+                                        copy.push({ text: "", stepNumber: prev.length + 1 });
+                                        setStepIngredients(prevSI => [...prevSI, []]);
+                                    }
                                     return copy;
                                 });
                             }}
