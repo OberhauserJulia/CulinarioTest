@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -21,6 +21,15 @@ export default function HomeScreen({ navigation }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>("Alle");
   const [searchQuery, setSearchQuery] = useState('');
   const { recipes, loading, error, loadRecipes } = useContext(RecipeContext);
+
+  // Kategorien dynamisch aus Rezepten extrahieren (wie in AddRecipeScreen)
+  const categoryOptions = useMemo(() => {
+    const base = ["Vorspeise", "Hauptgericht", "Dessert"];
+    // Nur string-Kategorien zulassen, undefined ausschließen
+    const recipeCategories = Array.from(new Set(recipes.map(r => r.category).filter((cat): cat is string => typeof cat === 'string' && !!cat)));
+    // Basis-Kategorien zuerst, dann neue, ohne Duplikate
+    return ["Alle", ...base, ...recipeCategories.filter(cat => !base.includes(cat))];
+  }, [recipes]);
 
   // Filtere Rezepte basierend auf Kategorie und Suchbegriff
   const filteredRecipes = recipes.filter(recipe => {
@@ -63,26 +72,14 @@ export default function HomeScreen({ navigation }: Props) {
       {/* Category Item */}
       <View className="w-full h-auto">
         <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row', gap: 12 }} showsHorizontalScrollIndicator={false}>
-          <CategoryItem
-            category="Alle"
-            isSelected={selectedCategory === "Alle"}
-            onPress={() => setSelectedCategory("Alle")}
-          />
-          <CategoryItem
-            category="Vorspeise"
-            isSelected={selectedCategory === "Vorspeise"}
-            onPress={() => setSelectedCategory("Vorspeise")}
-          />
-          <CategoryItem
-            category="Hauptgericht"
-            isSelected={selectedCategory === "Hauptgericht"}
-            onPress={() => setSelectedCategory("Hauptgericht")}
-          />
-          <CategoryItem
-            category="Dessert"
-            isSelected={selectedCategory === "Dessert"}
-            onPress={() => setSelectedCategory("Dessert")}
-          />
+          {categoryOptions.map((cat) => (
+            <CategoryItem
+              key={cat}
+              category={cat as string}
+              isSelected={selectedCategory === cat}
+              onPress={() => setSelectedCategory(cat as string)}
+            />
+          ))}
         </ScrollView>
       </View>
 
