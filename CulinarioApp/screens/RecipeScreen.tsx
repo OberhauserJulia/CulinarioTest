@@ -275,21 +275,21 @@ const styles = StyleSheet.create({
 
   textH1: {
     color: '#FFFFFF',
-    fontFamily: 'Montserrat',
+    fontFamily: 'Roboto',
     fontSize: 24,
     fontWeight: 'bold',
   },
 
   textH2: {
     color: '#FFFFFF',
-    fontFamily: 'Montserrat',
+    fontFamily: 'Roboto',
     fontSize: 18,
     fontWeight: 'bold',
   },
 
   counterButtonText: {
     color: '#FFFFFF',
-    fontFamily: 'Montserrat',
+    fontFamily: 'Roboto',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',

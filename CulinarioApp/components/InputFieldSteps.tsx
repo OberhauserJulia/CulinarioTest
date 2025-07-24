@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
 
   textBody: {
     color: '#FFFFFF',
-    fontFamily: 'Inter',
+    fontFamily: 'Roboto',
     fontSize: 16,
     fontWeight: 'medium',
     lineHeight: 25,

@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
 
     text: {
         color: '#FFFFFF',
-        fontFamily: 'Inter',
+        fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'medium',
         textAlign: 'center',
@@ -743,21 +743,21 @@ const styles = StyleSheet.create({
 
     textH1: {
         color: '#FFFFFF',
-        fontFamily: 'Montserrat',
+        fontFamily: 'Roboto',
         fontSize: 24,
         fontWeight: 'bold',
     },
 
     textH2: {
         color: '#66A182',
-        fontFamily: 'Montserrat',
+        fontFamily: 'Roboto',
         fontSize: 18,
         fontWeight: 'bold',
     },
 
     textBody: {
         color: '#FFFFFF',
-        fontFamily: 'Inter',
+        fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'medium',
         lineHeight: 25,

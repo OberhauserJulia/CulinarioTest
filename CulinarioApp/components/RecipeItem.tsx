@@ -99,7 +99,7 @@ export default function RecipeItem({ recipe, onPress }: RecipeItemProps) {
           borderBottomLeftRadius: 15,
           borderBottomRightRadius: isSwiped ? 0 : 15,
         }}>
-          <Text className="text-white text-center text-[16px] font-bold font-[Inter]">
+          <Text className="text-white text-center text-[16px] font-bold font-robotoMedium">
             {displayName}
           </Text>
         </View>

@@ -157,14 +157,14 @@ const styles = StyleSheet.create({
 
     textH1: {
         color: '#FFFFFF',
-        fontFamily: 'Montserrat',
+        fontFamily: 'Roboto',
         fontSize: 24,
         fontWeight: 'bold',
     },
 
     textBody: {
         color: '#FFFFFF',
-        fontFamily: 'Inter',
+        fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: 'medium',
         lineHeight: 25,

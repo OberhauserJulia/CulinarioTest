@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 
   textH2: {
     color: '#FFFFFF',
-    fontFamily: 'Montserrat',
+    fontFamily: 'Roboto',
     fontSize: 18,
     fontWeight: 'bold',
   },
