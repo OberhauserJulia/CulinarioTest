@@ -84,21 +84,22 @@ export default function RecipeScreen({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
+
+      <StatusBar style="light" />
+
+      <ImageBackground
+        source={recipe.image ? { uri: recipe.image } : require('../assets/recipeImages/marry-me-gnocchi.jpg')}
+        style={styles.imageContainer}
+      >
+
+        {/* Top Bar */}
+        <View style={styles.topBar}>
+          <SmallButton back={true} />
+          <SmallButton shoppingCart={true} />
+        </View>
+      </ImageBackground>
+      
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <StatusBar style="light" />
-
-        <ImageBackground 
-          source={recipe.image ? { uri: recipe.image } : require('../assets/recipeImages/marry-me-gnocchi.jpg')} 
-          style={styles.imageContainer}
-        >
-
-          {/* Top Bar */}
-          <View style={styles.topBar}>
-            <SmallButton back={true} />
-            <SmallButton shoppingCart={true} />
-          </View>
-        </ImageBackground>
-
         <View style={styles.recipeContainer}>
           <Image style={{ alignSelf: 'center' }} source={require('../assets/icons/homeIndicator.png')} />
           <Text style={styles.textH1}> {recipe.name} </Text>
@@ -140,14 +141,14 @@ export default function RecipeScreen({ route, navigation }: Props) {
 
             {/* Amount Counter */}
             <View style={styles.amountCounter}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.amountCounterButton}
                 onPress={decreaseServings}
               >
                 <Text style={styles.counterButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.textH2}> {servings} </Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.amountCounterButton}
                 onPress={increaseServings}
               >
@@ -159,10 +160,10 @@ export default function RecipeScreen({ route, navigation }: Props) {
           {/* Ingredient List */}
           <View style={styles.ingredientList}>
             {recipe.ingredients.map((ingredient, index) => (
-              <IngredientItem 
-                key={index} 
-                ingredient={ingredient} 
-                servings={servings} 
+              <IngredientItem
+                key={index}
+                ingredient={ingredient}
+                servings={servings}
                 originalServings={ingredient.originalServings || 2}
               />
             ))}
@@ -175,10 +176,10 @@ export default function RecipeScreen({ route, navigation }: Props) {
           <Text style={[styles.textH2, { color: '#66A182' }]}> Zubereitung </Text>
 
           {recipe.preparationSteps.map((step, index) => (
-            <StepItem 
-              key={index} 
-              step={step} 
-              servings={servings} 
+            <StepItem
+              key={index}
+              step={step}
+              servings={servings}
             />
           ))}
         </View>
@@ -186,7 +187,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
 
       {/* Fixed Big Button */}
       <View style={styles.fixedButtonContainer}>
-        <BigButton 
+        <BigButton
           cookingMode={true}
           onPress={() => route && route.params && route.params.recipeId && navigation.navigate('CookingMode', { recipeId: route.params.recipeId })}
         />
@@ -205,11 +206,14 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingBottom: 60,
     backgroundColor: '#161616',
+    position: 'absolute',
+    top: 345
   },
 
   imageContainer: {
     width: '100%',
     height: 360,
+    position: 'absolute',
   },
 
   topBar: {
