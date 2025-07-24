@@ -58,35 +58,36 @@ export default function InputFieldSteps({ stepNumber, placeholder, description, 
             lineHeight: 25,
           }}
         />
-        
-        <View className="h-[1px] w-[90%] bg-primary"/>
+
+        <View className="h-[1px] w-[90%] bg-primary" />
         <View className="bg-lightbackground p-3 rounded-[15px] w-full" style={styles.ingredientContainer}>
-          <TouchableOpacity style={styles.ingredientItem} onPress={handleOpenModal}>
-            <Plus style={styles.image} />
-            <Text style={styles.textBody}> Zutat hinzufügen </Text>
-          </TouchableOpacity>
+
 
           {/* Anzeige der ausgewählten Zutaten für diesen Schritt */}
           {selectedIngredients.map((ing, idx) => {
-              // Bild aus globaler ingredients-Liste suchen
-              const found = allIngredientsData.find((i: any) => i.name.toLowerCase() === ing.name.toLowerCase());
-              // Menge und Einheit parsen
-              const amountMatch = ing.amount.match(/([\d,.]+)/);
-              const amount = amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0;
-              const unit = ing.amount.replace(/^[\d,.]+\s*/, '');
-              // Wenn amount leer oder 0, dann nur Name anzeigen (amount/unit leer übergeben)
-              return (
-                <StepIngredientItem
-                  key={ing.id + idx}
-                  ingredient={{
-                    name: ing.name,
-                    amount: (!ing.amount || amount === 0) ? 0 : amount,
-                    unit: (!ing.amount || amount === 0) ? '' : unit,
-                    image: found ? found.image : undefined
-                  }}
-                />
-              );
-            })}
+            const found = allIngredientsData.find((i: any) => i.name.toLowerCase() === ing.name.toLowerCase());
+            const amountMatch = ing.amount.match(/([\d,.]+)/);
+            const amount = amountMatch ? parseFloat(amountMatch[1].replace(',', '.')) : 0;
+            const unit = ing.amount.replace(/^[\d,.]+\s*/, '');
+            return (
+              <StepIngredientItem
+                key={ing.id + idx}
+                ingredient={{
+                  name: ing.name,
+                  amount: (!ing.amount || amount === 0) ? 0 : amount,
+                  unit: (!ing.amount || amount === 0) ? '' : unit,
+                  image: found ? found.image : undefined
+                }}
+              />
+            );
+          })}
+
+          <TouchableOpacity style={styles.ingredientItem} onPress={handleOpenModal}>
+            <Plus style={styles.image} />
+            {selectedIngredients.length === 0 && (
+              <Text style={styles.textBody}> Zutat hinzufügen </Text>
+            )}
+          </TouchableOpacity>
 
         </View>
       </View>
@@ -118,11 +119,11 @@ const styles = StyleSheet.create({
   },
 
   ingredientContainer: {
-        backgroundColor: '#222222',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
-    },
+    backgroundColor: '#222222',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
 
   textBody: {
     color: '#FFFFFF',
