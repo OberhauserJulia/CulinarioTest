@@ -20,27 +20,25 @@ export default function IngredientItem({ ingredient, servings = 1 }: IngredientI
     );
     
     if (foundIngredient) {
-      return <Image style={styles.image} source={foundIngredient.image} />;
+      return (
+        console.log('Verwende Bild aus ingredients.ts:', foundIngredient.name),
+        <Image style={styles.image} source={foundIngredient.image} />
+      );
     }
     
-    // Falls in ingredient.image eine URI vorhanden ist, diese verwenden
-    if (ingredient.image) {
-      return <Image style={styles.image} source={{ uri: ingredient.image }} />;
-    }
-    
-    // Fallback-Bild verwenden
-    return <Image style={styles.image} source={require('../assets/ingredientImages/milkproducts/butter.png')} />;
+    // Fallback-Bild: Geist verwenden
+    return (
+      console.log('Verwende Fallback-Bild für Zutat:', ingredient.name),
+      <Image style={styles.image} source={require('../assets/ingredientImages/ghost.png')} />
+    );
   };
 
   return (
     <View style={styles.container}>
-        <View style={styles.ingedientContainer}>
             <View style={styles.imageContainer}>
                 {getIngredientImage()}
             </View>
-            <Text style={styles.textBody}> {ingredient.name} </Text>
-        </View>
-        <Text style={styles.textBody}> {adjustedAmount} {ingredient.unit} </Text>
+            <Text style={styles.textBody}>{adjustedAmount} {ingredient.unit} {ingredient.name}</Text>
     </View>
   );
 }
@@ -49,12 +47,6 @@ const styles = StyleSheet.create({
 
     container: {
         width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-
-    ingedientContainer: {
         flexDirection: 'row',
         gap: 12,
         alignItems: 'center',
