@@ -45,6 +45,9 @@ export default function CookingModeScreen() {
     const [ovenSetting, setOvenSetting] = useState("");
     const [source, setSource] = useState("");
 
+    // Key zum vollständigen Reset der Steps und Zutaten
+    const [resetKey, setResetKey] = useState(0);
+
     const [expanded, setExpanded] = React.useState(true);
 
     // Kategorie Dropdown State
@@ -75,6 +78,7 @@ export default function CookingModeScreen() {
             setMiscAmount("");
             setOvenSetting("");
             setSource("");
+            setResetKey(prev => prev + 1); // Key erhöhen, damit alles neu gemountet wird
         }, [])
     );
 
@@ -586,8 +590,8 @@ export default function CookingModeScreen() {
                     
                     {/* Zutatenliste */}
                     {ingredientsList.map((ingredient, index) => {
-                        // Eindeutigen Key pro Zutat verwenden
-                        const key = ingredient.uniqueKey || (ingredient.foundIngredient && ingredient.foundIngredient.id) || `fallback-${index}`;
+                        // Eindeutigen Key pro Zutat verwenden, plus resetKey für kompletten Reset
+                        const key = `${resetKey}-${ingredient.uniqueKey || (ingredient.foundIngredient && ingredient.foundIngredient.id) || `fallback-${index}`}`;
                         return (
                             <View key={key}>
                                 {ingredient.foundIngredient && !ingredient.isEditing ? (
@@ -648,7 +652,7 @@ export default function CookingModeScreen() {
                     </View>
                     {steps.map((step, index) => (
                         <InputFieldSteps
-                            key={index}
+                            key={`${resetKey}-step-${index}`}
                             stepNumber={step.stepNumber}
                             placeholder="Zubereitungsschritt beschreiben"
                             description={step.text}
